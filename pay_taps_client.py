@@ -1,3 +1,5 @@
+from create_page_model import CreatePageModel
+
 __author__ = 'tytkal'
 from rest_client import RestClient
 class PayTapsClient:
@@ -15,13 +17,14 @@ class PayTapsClient:
     def auth(self):
         params = {'merchant_id':self.username,'merchant_password':self.password}
         self.res_client.resourse = 'authentication'
-        self.res_client.post(params=params)
-        api_key = self.res_client.responce.json()['api_key']
+        responce = self.res_client.post(params=params)
+        api_key = responce.json()['api_key']
         if api_key == None:
             print 'password is wrong'
         else:
             self.api_key = api_key
-
+            #print self.api_key
+        return  self.api_key
     def validate_api_key(self):
         print ''
 
@@ -32,4 +35,8 @@ class PayTapsClient:
         print ''
 
     def create_pay_page(self):
+        cr_pa_mo = CreatePageModel()
+        cr_pa_mo.api_key = self.auth()
+        cr_pa_mo.title = 'testing'
+        cr_pa_mo.address_shipping = 'nakil'
         print ''
