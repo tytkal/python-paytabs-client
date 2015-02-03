@@ -3,6 +3,8 @@ from create_page_model import CreatePageModel
 
 __author__ = 'tytkal'
 from rest_client import RestClient
+
+
 class PayTapsClient:
     username = ''
     password = ''
@@ -13,10 +15,12 @@ class PayTapsClient:
     valide_api_key = 'api_key_valid'
     verify_payment = 'verify_payment'
     expire_key = 'logout'
+
     def __init__(self):
         self.res_client = RestClient('https://www.paytabs.com/api/')
+
     def auth(self):
-        params = {'merchant_id':self.username,'merchant_password':self.password}
+        params = {'merchant_id': self.username, 'merchant_password': self.password}
         self.res_client.resourse = 'authentication'
         responce = self.res_client.post(params=params)
         api_key = responce.json()['api_key']
@@ -24,12 +28,24 @@ class PayTapsClient:
             print 'password is wrong'
         else:
             self.api_key = api_key
-            #print self.api_key
-        return  self.api_key
+            # print self.api_key
+        return self.api_key
+
     def validate_api_key(self):
-        print ''
+        params = {'api_key':self.api_key}
+        self.res_client.resourse = 'api_key_valid'
+        responce = self.res_client.post(params=params)
+        if responce.json()['result'] == 'valid':
+            return True
+        else:
+            return False
+
 
     def vrify_payment(self):
+        params = {'api_key':self.api_key,'payment_reference':122225}
+        self.res_client.resourse = 'verify_payment'
+        response = self.res_client.post(params)
+        print response.json()
         print ''
 
     def expire_api_key(self):
@@ -39,7 +55,7 @@ class PayTapsClient:
         cr_pa_mo = CreatePageModel()
         cr_pa_mo.api_key = self.auth()
         cr_pa_mo.title = 'testing'
-        #cr_pa_mo.address_shipping = 'nakil'
+        # cr_pa_mo.address_shipping = 'nakil'
         cr_pa_mo.amount = 1200
         #cr_pa_mo.billing_address = 'nakil'
         cr_pa_mo.cc_first_name = 'khalid'
@@ -74,5 +90,8 @@ class PayTapsClient:
         print params
         self.res_client.resourse = 'create_pay_page'
         responce = self.res_client.post(params=params)
-        print responce.json()
-        print responce.json()['payment_url']
+        res_json = responce.json()
+        print res_json
+        if res_json['response'] == '10':
+            print responce.json()['payment_url']
+        return res_json
